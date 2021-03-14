@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Modager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    @import url("../css/style.css");
+  </style>
+  <script type="module" type="text/javascript" src="../js/index.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'unsafe-inline' 'self'; img-src 'self' data: https:; style-src 'unsafe-inline' *">
+</head>
+<body>
+  <header id="mainheader">
+    <div class="navbar draggable">
+      <section class="navbar-section noselect">
+        <a class="btn btn-link navbar-brand mr-2 nondraggable" id="modager-btn">Modager</a>
+      </section>
+      <section class="navbar-center">
+        <div id="navbar-path"></div>
+      </section>
+      <section class="navbar-section noselect">
+        <button class="btn btn-link red" onclick="window.close()">
+          <i class="icon icon-cross nondraggable"></i>
+        </button>
+      </section>
+    </div>
+  </header>
+  <div id="toasts"></div>
+  <!-- Hidden class to not show this before completion -->
+  <div id="main" class="hidden">
+    
+  </div>
+  <!-- Menu -->
+  <div id="menu" class="hidden">
+    <ul class="menu">
+      <li class="menu-item">
+        <a href="#" id="menu-new" draggable="false">
+          New Project
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="#" id="menu-open" draggable="false">
+          Open Project
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="#" id="menu-close" draggable="false">
+          Close Project
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="#" id="menu-import-btn" class="dropdown-toggle" draggable="false">
+          Import... <i class="icon icon-caret" id="importmenucaret"></i>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="#" id="menu-export-btn" class="dropdown-toggle" draggable="false">
+          Export... <i class="icon icon-caret" id="exportmenucaret"></i>
+        </a>
+      </li>
+      <li class="divider"></li>
+      <li class="menu-item">
+        <a href="#" id="menu-settings" draggable="false">
+          Settings
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Import Sub-Menu -->
+  <div id="importmenu" class="hidden">
+    <ul class="menu">
+      <li class="menu-item">
+        <a href="#" id="import-zip" draggable="false">
+          From ZIP
+        </a>
+      </li>
+      <li class="menu-item">
+        <a href="#" id="import-git" draggable="false">
+          From Git Repository
+        </a>
+      </li>
+    </ul>
+  </div>
+  <progress class="progress hidden" id="loadingBar"></progress>
+</body>
+</html>

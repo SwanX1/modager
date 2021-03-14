@@ -1,0 +1,91 @@
+@import url("spectre.css");
+@import url("spectre-exp.css");
+@import url("spectre-icons.css");
+
+body {
+  background-color: #f7f8f9;
+  overflow-y: hidden;
+}
+
+header#mainheader {
+  position: sticky;
+  top: 0;
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.nondraggable {
+  -webkit-app-region: no-drag;
+}
+
+.navbar {
+  padding: 0px 12px;
+  border-bottom: .05rem solid #dadee4;
+  background-color: #fff;
+}
+
+.toast {
+  animation: slide-down .15s ease 1;
+}
+
+#main {
+  width: 100vw;
+  height: calc(100vh - 37px);
+}
+
+#loadingBar {
+  position: fixed;
+  top: 0;
+}
+
+#menu {
+  position: fixed;
+  top: 42px;
+  left: 8px;
+}
+
+#menu:not(.hidden) {
+  animation: slide-down .15s ease 1;
+}
+
+#importmenu {
+  position: fixed;
+  top: 120px;
+  left: 160px;
+}
+
+#importmenu:not(.hidden) {
+  animation: slide-down .15s ease 1;
+}
+
+.menu .menu-item.disabled {
+  color: #66758c!important;
+}
+
+.menu .menu-item.disabled > a:focus, .menu .menu-item.disabled > a:hover {
+  background: #f1f1fc!important;
+  color: inherit!important;
+  cursor: not-allowed;
+  border: none;
+}
+
+.dropdown-toggle {
+  color: inherit;
+}
+
+.noselect, img {
+  user-select: none;
+}
+
+.hidden {
+  display: none!important;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}

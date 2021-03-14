@@ -1,0 +1,5 @@
+node_modules/
+dist/
+src/css/spectre.css
+src/css/spectre-exp.css
+src/css/spectre-icons.css

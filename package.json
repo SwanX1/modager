@@ -1,0 +1,27 @@
+{
+  "name": "modager",
+  "version": "0.0.1-dev1",
+  "description": "a modpack manager",
+  "main": "src/main/app.js",
+  "scripts": {
+    "start": "electron src/main/app.js",
+    "build": "electron-packager . Modager",
+    "dist": "electron-builder",
+    "postinstall": "node ./scripts/postinstall.js"
+  },
+  "author": "SwanX1",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aio-mc-api": "^1.2.2",
+    "electron-store": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.34",
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
+    "spectre.css": "^0.5.9"
+  },
+  "build": {
+    "appId": "SwanX1.Modager"
+  }
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>New Project | Modager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    @import url("../css/newproject.css");
+  </style>
+  <script type="module" type="text/javascript" src="../js/newproject.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'unsafe-inline' 'self'; img-src 'self' data: https:; style-src 'unsafe-inline' *">
+</head>
+
+<body>
+  <header id="mainheader">
+    <div class="navbar draggable">
+      <section class="navbar-section noselect"></section>
+      <section class="navbar-center noselect">
+        <span>New Project</span>
+      </section>
+      <section class="navbar-section noselect">
+        <button class="btn btn-link red" onclick="window.close()">
+          <i class="icon icon-cross nondraggable"></i>
+        </button>
+      </section>
+    </div>
+  </header>
+  <div id="main">
+    <form class="form-horizontal" id="create-form">
+      
+      <div class="container columns">
+        <div class="form-group col-7 mr-2">
+          <div>
+            <input class="form-input" type="text" id="projectName" placeholder="Project Name">
+          </div>
+          <span class="form-input-hint show-when-error">Invalid Project Name.</span>
+        </div>
+  
+        <div class="form-group col-4 mb-2">
+          <div>
+            <input class="form-input" type="text" id="authorName" placeholder="Author">
+          </div>
+          <span class="form-input-hint show-when-error">Invalid Author.</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-input" id="directorySelect" placeholder="Project Directory">
+          <a class="btn btn-primary input-group-btn" id="directorySelect-btn">Select</a>
+        </div>
+        <span class="form-input-hint show-when-error" id="directorySelectError"></span>
+      </div>
+      
+      <div class="form-group mb-0">
+        <div class="mr-2">
+          <select class="form-select" id="version" placeholder="Version">
+            <option selected disabled>Minecraft Version</option>
+          </select>
+        </div>
+        <div>
+          <select class="form-select hidden" id="loaderVersion" placeholder="Forge Version"></select>
+        </div>
+        <span class="form-input-hint show-when-error">You need to select a Minecraft and Forge version.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-switch noselect">
+          <input type="checkbox" id="initGit" disabled>
+          <i class="form-icon"></i> Initialize Git Repository
+        </label>
+      </div>
+
+      <a class="btn btn-primary" id="submit">Create</a>
+      
+    </form>
+  </div>
+  <progress class="progress hidden" id="loadingBar"></progress>
+</body>
+
+</html>
