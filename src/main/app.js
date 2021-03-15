@@ -102,7 +102,7 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  window.webContents.openDevTools();
+  //window.webContents.openDevTools();
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -171,7 +171,7 @@ app.on('ready', () => {
 	});
   mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
 	mainWin.removeMenu();
-	mainWin.webContents.openDevTools();
+	//mainWin.webContents.openDevTools();
 	mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
 		mainWin.show();
