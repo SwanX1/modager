@@ -5,6 +5,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const fs = require('fs/promises');
 const mc = require('aio-mc-api');
+const store = new (require('electron-store'))();
 
 const ipc = {
   on(channel, callback) {
@@ -18,6 +19,21 @@ const ipc = {
     });
   }
 };
+
+ipc.on('store', (action, ...params) => {
+  switch (action) {
+    case 'get':
+      return store.get(...params);
+    case 'set':
+      return store.set(...params);
+    case 'delete':
+      return store.delete(...params);
+    case 'has':
+      return store.has(...params);
+    default:
+      throw new TypeError('No action for \'store\':', action);
+  }
+});
 
 let gitInstalled = null;
 ipc.on('isGitInstalled', () => {
@@ -83,16 +99,16 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
     parent: mainWin,
     modal: true
   });
-  window.loadURL(`file://${path.join(__dirname, '../html/newproject.html')}`);
+  window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  //window.webContents.openDevTools();
+  window.webContents.openDevTools();
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
   });
 }));
 
-ipc.onAsync('setQuery', (querystring) => mainWin.loadURL(`file://${path.join(__dirname, `../html/index.html${querystring}`)}`));
+ipc.onAsync('setQuery', (query) => mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html' + query)));
 
 /**
  * Data coming from a 'newproject' window, for project creation
@@ -152,9 +168,9 @@ app.on('ready', () => {
     autoHideMenuBar: true,
     frame: false
 	});
-  mainWin.loadURL(`file://${path.join(__dirname, '../html/index.html?init')}`);
+  mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
 	mainWin.removeMenu();
-	//mainWin.webContents.openDevTools();
+	mainWin.webContents.openDevTools();
 	mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
 		mainWin.show();

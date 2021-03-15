@@ -1,37 +1,12 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
-const Store = require('electron-store');
-const store = new Store();
 
 const query = parseQuery(window.location.search);
 
 contextBridge.exposeInMainWorld('query', query);
 
-contextBridge.exposeInMainWorld('store', {
-  get(...args) {
-    return store.get(...args);
-  },
-  set(...args) {
-    return store.set(...args);
-  },
-  has(...args) {
-    return store.has(...args);
-  },
-  delete(...args) {
-    return store.delete(...args);
-  }
-});
-
-contextBridge.exposeInMainWorld(
-  'state', {
-    project: query.empty === 'true' ? false : {},
-    path: typeof query.path !== 'undefined' ? query.path : null
-  }
-);
-
-
 function send(channel, ...data) {
-  let syncChannels = ['isGitInstalled', 'log'];
+  let syncChannels = ['isGitInstalled', 'log', 'store'];
   if (syncChannels.includes(channel)) {
     return ipcRenderer.sendSync(channel, ...data);
   }
@@ -51,7 +26,6 @@ function receive(channel, callback) {
     return ipcRenderer.on(channel, callback);
   }
 }
-
 contextBridge.exposeInMainWorld(
   'api', {
     log: send.bind(send, 'log'),
@@ -67,6 +41,7 @@ contextBridge.exposeInMainWorld(
  * @param {string} queryString window.location.search
  * @returns {object}
  */
+
 function parseQuery(queryString) {
   var query = {};
   var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
