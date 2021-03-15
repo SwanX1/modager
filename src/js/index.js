@@ -43,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @type {HTMLAnchorElement} */
   const menuCloseButton = document.querySelector('#menu-close');
 
+  /** @type {HTMLDivElement} */
+  const importMenu = document.querySelector('#importmenu');
+  /** @type {HTMLDivElement} */
+  const exportMenu = document.querySelector('#exportmenu');
   if ('empty' in query) {
     menuCloseButton.parentElement.parentElement.removeChild(menuCloseButton.parentElement);
     mainNode.innerHTML = `
@@ -58,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
       api.log('\x1b[0m\x1b[94mINFO \x1b[0mClosing Project');
       window.location.search = '?empty';
     });
+    importMenu.style.top = '156px';
+    exportMenu.style.top = '192px';
   }
 
   if (!api.send('isGitInstalled')) {
@@ -66,18 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('#modager-btn').addEventListener('click', () => {
     toggleVisibility(document.querySelector('#menu'));
-    toggleVisibility(document.querySelector('#importmenu'), true);
-    toggleVisibility(document.querySelector('#exportmenu'), true);
+    toggleVisibility(importMenu, true);
+    toggleVisibility(exportMenu, true);
   });
 
-  document.querySelector('#menu-import-btn').addEventListener('click', () => {
-    toggleVisibility(document.querySelector('#importmenu'));
-    toggleVisibility(document.querySelector('#exportmenu'), true);
+  importButton.addEventListener('click', () => {
+    toggleVisibility(importMenu);
+    toggleVisibility(exportMenu, true);
   });
 
-  document.querySelector('#menu-export-btn').addEventListener('click', () => {
-    toggleVisibility(document.querySelector('#importmenu'), true);
-    toggleVisibility(document.querySelector('#exportmenu'));
+  exportButton.addEventListener('click', () => {
+    toggleVisibility(importMenu, true);
+    toggleVisibility(exportMenu);
   });
 
   document.querySelector('#menu-new').addEventListener('click', async () => {

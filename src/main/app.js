@@ -102,7 +102,7 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  window.webContents.openDevTools();
+  //window.webContents.openDevTools();
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
