@@ -27,15 +27,15 @@ const ipc = {
 ipc.on('store', (action, ...params) => {
   switch (action) {
     case 'get':
-      return store.get(...params);
+    return store.get(...params);
     case 'set':
-      return store.set(...params);
+    return store.set(...params);
     case 'delete':
-      return store.delete(...params);
+    return store.delete(...params);
     case 'has':
-      return store.has(...params);
+    return store.has(...params);
     default:
-      throw new TypeError('No action for \'store\':', action);
+    throw new TypeError('No action for \'store\':', action);
   }
 });
 
@@ -188,33 +188,33 @@ ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
 let mainWin;
 app.on('ready', () => {
   console.log('\x1b[0m\x1b[94mINFO \x1b[0mApp is ready, creating window...');
-	mainWin = new BrowserWindow({
-		width: 960,
-		height: 720,
-		minWidth: 640,
+  mainWin = new BrowserWindow({
+    width: 960,
+    height: 720,
+    minWidth: 640,
     minHeight: 480,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, './preload/index.js')
     },
-		resizable: true,
+    resizable: true,
     backgroundColor: '#ffffff',
-		show: false,
+    show: false,
     autoHideMenuBar: true,
     frame: false
-	});
+  });
   mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
-	mainWin.removeMenu();
+  mainWin.removeMenu();
   if (store.get('showDevTools') === true) {
     mainWin.webContents.openDevTools();
   }
-	mainWin.once('ready-to-show', () => {
+  mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
-		mainWin.show();
-	});
-
-	mainWin.on('closed', () => {
-		app.quit();
-	});
+    mainWin.show();
+  });
+  
+  mainWin.on('closed', () => {
+    app.quit();
+  });
 });
