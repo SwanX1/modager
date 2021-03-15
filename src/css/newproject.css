@@ -4,10 +4,6 @@
   padding: 16px;
 }
 
-#toasts:hover {
-  opacity: 1;
-}
-
 #submit {
   position: absolute;
   bottom: 16px;

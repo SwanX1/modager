@@ -102,7 +102,7 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  //window.webContents.openDevTools();
+  window.webContents.openDevTools();
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -149,6 +149,32 @@ ipc.onAsync('createProject', /** @param {NewProjectData} data */ async data => {
   return data.path;
 });
 
+ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
+  const window = new BrowserWindow({
+    width: Math.min(480, mainWin.getSize()[0] - 64),
+    height: Math.min(300, mainWin.getSize()[1] - 64),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, './preload/settings.js')
+    },
+    backgroundColor: '#ffffff',
+    show: false,
+    resizable: false,
+    autoHideMenuBar: true,
+    frame: false,
+    parent: mainWin,
+    modal: true
+  });
+  window.loadURL('file://' + path.join(__dirname, '../html/settings.html'));
+  window.removeMenu();
+  window.webContents.openDevTools();
+  window.once('ready-to-show', () => {
+    window.show();
+    resolve(true);
+  });
+}));
+
 /** @type {BrowserWindow} */
 let mainWin;
 app.on('ready', () => {
@@ -171,7 +197,7 @@ app.on('ready', () => {
 	});
   mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
 	mainWin.removeMenu();
-	//mainWin.webContents.openDevTools();
+	mainWin.webContents.openDevTools();
 	mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
 		mainWin.show();

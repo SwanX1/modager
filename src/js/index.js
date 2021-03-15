@@ -91,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.search = `?path=${selection.filePaths[0]}`;
   });
 
+  document.querySelector('#menu-settings').addEventListener('click', async () => {
+    hideMenu();
+    await api.send('newSettingsWindow');
+  });
 
   // Hide menu if clicked outside it.
   // Hacky function, please rewrite it better if you can.

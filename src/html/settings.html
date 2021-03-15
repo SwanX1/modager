@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Settings | Modager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    @import url("../css/settings.css");
+  </style>
+  <script type="module" type="text/javascript" src="../js/settings.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'unsafe-inline' 'self'; img-src 'self' data: https:; style-src 'unsafe-inline' *">
+</head>
+
+<body>
+  <header id="mainheader">
+    <div class="navbar draggable">
+      <section class="navbar-section noselect"></section>
+      <section class="navbar-center noselect">
+        <span>Settings</span>
+      </section>
+      <section class="navbar-section noselect">
+        <button class="btn btn-link red" onclick="window.close()">
+          <i class="icon icon-cross nondraggable"></i>
+        </button>
+      </section>
+    </div>
+  </header>
+  <div id="main">
+    <div class="empty">
+      <p class="empty-title h5">No Settings</p>
+      <p class="empty-subtitle">Currently, there is nothing to configure!</p>
+    </div>
+  </div>
+  <progress class="progress hidden" id="loadingBar"></progress>
+</body>
+
+</html>

@@ -11,7 +11,7 @@ function send(channel, ...data) {
     return ipcRenderer.sendSync(channel, ...data);
   }
 
-  let asyncChannels = ['openDialog', 'newProjectWindow'];
+  let asyncChannels = ['openDialog', 'newProjectWindow', 'newSettingsWindow'];
   if (asyncChannels.includes(channel)) {
     ipcRenderer.send(channel, ...data);
     return new Promise((resolve, reject) => {
