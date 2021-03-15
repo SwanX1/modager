@@ -1,3 +1,9 @@
 window.addEventListener('DOMContentLoaded', () => {
-  // Stub event
+  /** @type {HTMLInputElement} */
+  const showDevTools = document.querySelector('#showDevTools');
+
+  showDevTools.checked = api.send('store', 'get', 'showDevTools');
+  showDevTools.addEventListener('change', () => {
+    api.send('store', 'set', 'showDevTools', showDevTools.checked);
+  });
 });

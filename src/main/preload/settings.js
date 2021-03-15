@@ -1,12 +1,12 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 function send(channel, ...data) {
-  let syncChannels = ['log', 'store'];
+  let syncChannels = ['store'];
   if (syncChannels.includes(channel)) {
     return ipcRenderer.sendSync(channel, ...data);
   }
 
-  let asyncChannels = ['openDialog'];
+  let asyncChannels = [];
   if (asyncChannels.includes(channel)) {
     ipcRenderer.send(channel, ...data);
     return new Promise((resolve, reject) => {
@@ -23,8 +23,5 @@ function receive(channel, callback) {
 }
 
 contextBridge.exposeInMainWorld(
-  'api', {
-    log: send.bind(send, 'log'),
-    send, receive,
-  }
+  'api', { send, receive }
 );

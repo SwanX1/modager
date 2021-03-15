@@ -7,6 +7,10 @@ const fs = require('fs/promises');
 const mc = require('aio-mc-api');
 const store = new (require('electron-store'))();
 
+if (!store.has('showDevTools')) {
+  store.set('showDevTools', false);
+}
+
 const ipc = {
   on(channel, callback) {
     ipcMain.on(channel, (event, ...args) => {
@@ -102,7 +106,9 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  //window.webContents.openDevTools();
+  if (store.get('showDevTools') === true) {
+    window.webContents.openDevTools();
+  }
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -169,7 +175,9 @@ ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/settings.html'));
   window.removeMenu();
-  //window.webContents.openDevTools();
+  if (store.get('showDevTools') === true) {
+    window.webContents.openDevTools();
+  }
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -198,7 +206,9 @@ app.on('ready', () => {
 	});
   mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
 	mainWin.removeMenu();
-	//mainWin.webContents.openDevTools();
+  if (store.get('showDevTools') === true) {
+    mainWin.webContents.openDevTools();
+  }
 	mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
 		mainWin.show();
