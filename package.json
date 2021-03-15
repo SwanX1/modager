@@ -1,6 +1,6 @@
 {
   "name": "modager",
-  "version": "0.0.1-dev3",
+  "version": "0.0.1-dev4",
   "description": "a modpack manager",
   "main": "src/main/app.js",
   "scripts": {
