@@ -115,8 +115,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   projectDirectoryInputButton.addEventListener('click', async () => {
+    const inputDir = document.forms['create-form'].directorySelect.value;
     const selection = await api.send('openDialog', {
       title: 'Select Project Directory',
+      defaultPath: api.fs.exists(inputDir) ? inputDir : api.homedir,
       properties: ['openDirectory', 'createDirectory']
     });
     if (selection.canceled) return;

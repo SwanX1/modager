@@ -94,6 +94,7 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
     },
     backgroundColor: '#ffffff',
     show: false,
+    resizable: false,
     autoHideMenuBar: true,
     frame: false,
     parent: mainWin,

@@ -49,7 +49,7 @@ contextBridge.exposeInMainWorld(
     path: {
       join: (...paths) => pathModule.join(...paths)
     },
-    homedir: require('os').homedir(),
+    homedir: pathModule.join(require('os').homedir(), 'modager'),
     send, receive,
   }
 );
