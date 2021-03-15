@@ -140,10 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let initGit = document.forms['create-form'].initGit.checked;
     
     let direrror = false;
-    if (!(/^[a-z0-9\-\_\.\\\/ ]+$/gi.test(directory))) {
-      projectDirectoryInputError.innerHTML = 'The provided path is invalid.';
-      direrror = true;
-    } else if (!api.fs.accessible(directory)) {
+    if (!api.fs.accessible(directory)) {
       projectDirectoryInputError.innerHTML = 'The provided path is not accessible.';
       direrror = true;
     } else if (api.fs.exists(directory)) {
