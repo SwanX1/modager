@@ -143,7 +143,8 @@ ipc.onAsync('createProject', /** @param {NewProjectData} data */ async data => {
         name: 'forge',
         version: data.version.forge
       }
-    }
+    },
+    mods: []
   }
   await fs.writeFile(path.join(data.path, 'pack.json'), JSON.stringify(projectManifest, null, 2));
   return data.path;
