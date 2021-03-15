@@ -5,8 +5,8 @@
   "main": "src/main/app.js",
   "scripts": {
     "start": "electron src/main/app.js",
-    "build": "electron-packager . Modager",
-    "dist": "electron-builder",
+    "build": "electron-builder --publish never",
+    "dist": "electron-builder --publish never",
     "postinstall": "node ./scripts/postinstall.js"
   },
   "author": "SwanX1",
@@ -22,6 +22,9 @@
     "spectre.css": "^0.5.9"
   },
   "build": {
-    "appId": "SwanX1.Modager"
+    "appId": "SwanX1.Modager",
+    "win": {
+      "target": "portable"
+    }
   }
 }
