@@ -67,10 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#modager-btn').addEventListener('click', () => {
     toggleVisibility(document.querySelector('#menu'));
     toggleVisibility(document.querySelector('#importmenu'), true);
+    toggleVisibility(document.querySelector('#exportmenu'), true);
   });
 
   document.querySelector('#menu-import-btn').addEventListener('click', () => {
     toggleVisibility(document.querySelector('#importmenu'));
+    toggleVisibility(document.querySelector('#exportmenu'), true);
+  });
+
+  document.querySelector('#menu-export-btn').addEventListener('click', () => {
+    toggleVisibility(document.querySelector('#importmenu'), true);
+    toggleVisibility(document.querySelector('#exportmenu'));
   });
 
   document.querySelector('#menu-new').addEventListener('click', async () => {

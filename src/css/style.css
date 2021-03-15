@@ -60,6 +60,16 @@ header#mainheader {
   animation: slide-down .15s ease 1;
 }
 
+#exportmenu {
+  position: fixed;
+  top: 156px;
+  left: 160px;
+}
+
+#exportmenu:not(.hidden) {
+  animation: slide-down .15s ease 1;
+}
+
 .menu .menu-item.disabled {
   color: #66758c!important;
 }

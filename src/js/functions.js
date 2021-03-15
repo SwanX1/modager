@@ -12,4 +12,5 @@ export function toggleVisibility(element, force) {
 export function hideMenu() {
   toggleVisibility(document.querySelector('#menu'), true);
   toggleVisibility(document.querySelector('#importmenu'), true);
+  toggleVisibility(document.querySelector('#exportmenu'), true);
 }
