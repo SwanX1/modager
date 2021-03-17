@@ -28,6 +28,7 @@ header#mainheader {
 
 .toast {
   animation: slide-down .15s ease 1;
+  opacity: .75;
 }
 
 #main {

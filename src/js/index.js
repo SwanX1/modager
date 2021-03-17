@@ -1,6 +1,7 @@
 import {
   toggleVisibility,
-  hideMenu
+  hideMenu,
+  addToast
 } from './functions.js';
 
 // Redirect initial window to last opened project (or an empty window if there is no last opened project)
@@ -19,6 +20,28 @@ if ('empty' in query) {
   api.send('store', 'delete', 'lastPath');
 }
 
+/**
+ * @typedef ProjectManifest
+ * @property {string} name Name of the project
+ * @property {string} author Author of the project
+ * @property {Object} minecraft
+ * @property {string} minecraft.version Version of Minecraft
+ * @property {Object} minecraft.modloader
+ * @property {'forge'} minecraft.modloader.name Name of the modloader
+ * @property {string} minecraft.modloader.version
+ * @property {Mod[]} mods
+ */
+
+/**
+ * @typedef Project
+ * @property {ProjectManifest} manifest
+ * @property {string} path
+ */
+
+/**
+ * @type {Project}
+ */
+const project = {};
 if ('path' in query) {
   if (!api.fs.exists(query.path)) {
     api.log('\x1b[0m\x1b[94mINFO \x1b[0mSpecified path does not exist, redirecting to empty window:', query.path);
@@ -30,19 +53,36 @@ if ('path' in query) {
   } else {
     // Store last opened project as current project
     api.send('store', 'set', 'lastPath', query.path);
+    project.path = query.path;
+    try {
+      project.manifest = JSON.parse(api.fs.read(api.path.join(query.path, 'pack.json')));
+      document.addEventListener('DOMContentLoaded', () => {
+        /** @type {HTMLDivElement} */
+        const navbarTitleNode = document.querySelector('#navbar-title');
+        navbarTitleNode.innerHTML = project.manifest.name;
+      });
+    } catch (err) {
+      document.addEventListener('DOMContentLoaded', () => {
+        /** @type {HTMLDivElement} */
+        const navbarTitleNode = document.querySelector('#navbar-title');
+        navbarTitleNode.innerHTML = project.path;
+        addToast('This directory doesn\'t look like a valid project...', 'error', { enabled: false });
+      });
+    }
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   /** @type {HTMLDivElement} */
   const mainNode = document.querySelector('#main');
-  /** @type {HTMLDivElement} */
-  const navbarPathNode = document.querySelector('#navbar-path');
   /** @type {HTMLProgressElement} */
   const loadingBar = document.querySelector('#loadingBar');
   /** @type {HTMLAnchorElement} */
   const menuCloseButton = document.querySelector('#menu-close');
-
+  /** @type {HTMLAnchorElement} */
+  const importButton = document.querySelector('#menu-import-btn');
+  /** @type {HTMLAnchorElement} */
+  const exportButton = document.querySelector('#menu-export-btn');
   /** @type {HTMLDivElement} */
   const importMenu = document.querySelector('#importmenu');
   /** @type {HTMLDivElement} */
@@ -56,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
   } else if (!('init' in query)) {
-    navbarPathNode.innerHTML = query.path;
     menuCloseButton.addEventListener('click', () => {
       hideMenu();
       api.log('\x1b[0m\x1b[94mINFO \x1b[0mClosing Project');
@@ -107,6 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#menu-settings').addEventListener('click', async () => {
     hideMenu();
     await api.send('newSettingsWindow');
+  });
+
+  document.querySelector('#menu-about').addEventListener('click', async () => {
+    hideMenu();
+    await api.send('newAboutWindow');
   });
 
   // Hide menu if clicked outside it.

@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const fs = require('fs/promises');
@@ -27,16 +27,20 @@ const ipc = {
 ipc.on('store', (action, ...params) => {
   switch (action) {
     case 'get':
-    return store.get(...params);
+      return store.get(...params);
     case 'set':
-    return store.set(...params);
+      return store.set(...params);
     case 'delete':
-    return store.delete(...params);
+      return store.delete(...params);
     case 'has':
-    return store.has(...params);
+      return store.has(...params);
     default:
-    throw new TypeError('No action for \'store\':', action);
+      throw new TypeError('No action for \'store\':', action);
   }
+});
+
+ipc.onAsync('openExternal', link => {
+  return shell.openExternal(link);
 });
 
 let gitInstalled = null;
@@ -183,6 +187,33 @@ ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
     resolve(true);
   });
 }));
+ipc.onAsync('newAboutWindow', () => new Promise(resolve => {
+  const window = new BrowserWindow({
+    width: Math.min(480, mainWin.getSize()[0] - 64),
+    height: Math.min(300, mainWin.getSize()[1] - 64),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, './preload/about.js')
+    },
+    backgroundColor: '#ffffff',
+    show: false,
+    resizable: true,
+    autoHideMenuBar: true,
+    frame: false,
+    parent: mainWin,
+    modal: true
+  });
+  window.loadURL('file://' + path.join(__dirname, '../html/about.html'));
+  window.removeMenu();
+  if (store.get('showDevTools') === true) {
+    window.webContents.openDevTools();
+  }
+  window.once('ready-to-show', () => {
+    window.show();
+    resolve(true);
+  });
+}));
 
 /** @type {BrowserWindow} */
 let mainWin;
@@ -213,7 +244,7 @@ app.on('ready', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
     mainWin.show();
   });
-  
+
   mainWin.on('closed', () => {
     app.quit();
   });

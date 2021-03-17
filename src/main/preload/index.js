@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
+const path = require('path');
 
 const query = parseQuery(window.location.search);
 
@@ -11,7 +12,7 @@ function send(channel, ...data) {
     return ipcRenderer.sendSync(channel, ...data);
   }
 
-  let asyncChannels = ['openDialog', 'newProjectWindow', 'newSettingsWindow'];
+  let asyncChannels = ['openDialog', 'newProjectWindow', 'newSettingsWindow', 'newAboutWindow', 'openExternal'];
   if (asyncChannels.includes(channel)) {
     ipcRenderer.send(channel, ...data);
     return new Promise((resolve, reject) => {
@@ -29,8 +30,12 @@ function receive(channel, callback) {
 contextBridge.exposeInMainWorld(
   'api', {
     log: send.bind(send, 'log'),
+    path: {
+      join: (...paths) => path.join(...paths)
+    },
     fs: {
-      exists: (path) => fs.existsSync(path)
+      exists: (path) => fs.existsSync(path),
+      read: (path) => fs.readFileSync(path).toString()
     },
     send, receive,
   }
