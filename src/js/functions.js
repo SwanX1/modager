@@ -37,3 +37,46 @@ export function addToast(text, type = 'warning', dismiss = { enabled: true, text
   toastElement.classList.add(`toast-${type}`);
   return document.getElementById("toasts").appendChild(toastElement);
 }
+
+/**
+ * Checks if given object is a valid project manifest.
+ * @param {object} o
+ * @returns {void}
+ * @throws Will throw an error if the given object is not a valid project manifest.
+ */
+export function validateManifest(o) {
+  if (typeof o.name !== 'string') throw new Error();
+  if (typeof o.author !== 'string') throw new Error();
+  if (typeof o.icon !== 'undefined' && typeof o.icon !== 'string') throw new Error();
+  if (typeof o.minecraft !== 'object') throw new Error();
+  if (typeof o.minecraft.version !== 'string') throw new Error();
+  if (typeof o.minecraft.modloader !== 'object') throw new Error();
+  if (o.minecraft.modloader.name !== 'forge') throw new Error();
+  if (typeof o.minecraft.modloader.version !== 'string') throw new Error();
+  if (!Array.isArray(o.mods)) throw new Error();
+  
+  o.mods.forEach(mod => {
+    if (typeof mod.id !== 'number') throw new Error();
+    if (typeof mod.name !== 'string') throw new Error();
+    if (!Array.isArray(mod.authors)) throw new Error();
+    if (typeof mod.websiteUrl !== 'string') throw new Error();
+    if (!Array.isArray(mod.categories)) throw new Error();
+    if (typeof mod.primaryCategoryId !== 'number') throw new Error();
+    if (typeof mod.slug !== 'string') throw new Error();
+    if (typeof mod.iconUrl !== 'string') throw new Error();
+    if (typeof mod.installedFileId !== 'number') throw new Error();
+    if (typeof mod.summary !== 'string') throw new Error();
+    mod.authors.forEach(author => {
+      if (typeof author.name !== 'string') throw new Error();
+      if (typeof author.url !== 'string') throw new Error();
+      if (typeof author.id !== 'number') throw new Error();
+    });
+    mod.categories.forEach(category => {
+      if (typeof category.categoryId !== 'number') throw new Error();
+      if (typeof category.name !== 'string') throw new Error();
+      if (typeof category.url !== 'string') throw new Error();
+      if (typeof category.avatarUrl !== 'string') throw new Error();
+      if (typeof category.parentId !== 'number') throw new Error();
+    });
+  });
+}

@@ -5,6 +5,7 @@
 body {
   background-color: #f7f8f9;
   overflow-y: hidden;
+  width: 100vw;
 }
 
 header#mainheader {
@@ -34,6 +35,14 @@ header#mainheader {
 #main {
   width: 100vw;
   height: calc(100vh - 37px);
+  background-color: #f7f8f9!important;
+}
+
+#toasts {
+  position: fixed;
+  overflow: hidden;
+  width: 100vw;
+  top: 37px;
 }
 
 #loadingBar {
@@ -71,6 +80,10 @@ header#mainheader {
   animation: slide-down .15s ease 1;
 }
 
+.menu {
+  overflow: hidden;
+}
+
 .menu .menu-item.disabled {
   color: #66758c!important;
 }
@@ -99,4 +112,123 @@ header#mainheader {
   flex-direction: column;
   height: 100%;
   position: relative;
+}
+
+#modspanel {
+  height: calc(100vh - 37px);
+  background-color: #f7f8f9;
+}
+
+#modspanel > .panel-header {
+  background-color: #fff;
+}
+
+#modspanel .panel-body {
+  padding-top: .4rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#mods {
+  overflow-y: hidden;
+}
+
+#sidepanel {
+  height: calc(100vh - 37px);
+  background-color: #f7f8f9;
+}
+
+#sidepanel > .panel-header {
+  border-bottom: 2px solid #dadee4;
+  background-color: #fff;
+}
+
+#sidepanel .panel-body {
+  padding-top: 2rem;
+  overflow-x: hidden;
+}
+
+#sidepanel-column {
+  max-width: 480px;
+}
+
+#project-icon {
+  max-height: 64px;
+  max-width: 64px;
+}
+
+.tile-mod {
+  transition: background-color .15s;
+}
+
+.tile-mod:hover {
+  background-color: #edeceb;
+}
+
+.mod-logo {
+  margin-top: 6px;
+  max-width: 48px;
+  max-height: 48px;
+}
+
+.tile-action .dropdown .menu {
+  right: 0;
+  left: auto;
+}
+
+.mod-delete:hover {
+  background: #fcf1f1!important;
+  color: #e85600!important;
+}
+
+.mod-delete:hover .icon-delete::before {
+  border-color: #e85600;
+}
+
+.mod-delete:hover .icon-delete::after {
+  background: #e85600;
+  box-shadow: #e85600 -0.25em 0.2em, #e85600 0.25em 0.2em;
+}
+
+.mod-update:hover {
+  background: #f1fcf1!important;
+  color: #32b643!important;
+}
+
+#icon-select {
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 64px;
+  width: 64px;
+  max-height: 64px;
+  max-width: 64px;
+}
+
+#icon-select .overlay {
+  width: 64px;
+  height: 64px;
+  background: rgba(0, 0, 0, .5);
+  opacity: 0;
+  transition: opacity .15s;
+}
+
+#icon-select .overlay:hover {
+  opacity: 1;  
+}
+
+#icon-select .overlay > i.icon {
+  position: relative;
+  color: #fff;
+  top: 19px;
+  left: 23px;
+}
+
+#icon-select .overlay:hover > i.icon {
+  opacity: 1;
+}
+
+@media only screen and (max-width: 1500px) {
+  #panel-column {
+    width: calc(100% / 3 * 2);
+  }
 }

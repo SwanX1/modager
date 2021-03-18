@@ -1,18 +1,19 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const mcapi = require('aio-mc-api');
 
 const query = parseQuery(window.location.search);
 
 contextBridge.exposeInMainWorld('query', query);
 
 function send(channel, ...data) {
-  let syncChannels = ['isGitInstalled', 'log', 'store'];
+  let syncChannels = ['isGitInstalled', 'log', 'store', '__dirname'];
   if (syncChannels.includes(channel)) {
     return ipcRenderer.sendSync(channel, ...data);
   }
 
-  let asyncChannels = ['openDialog', 'newProjectWindow', 'newSettingsWindow', 'newAboutWindow', 'openExternal'];
+  let asyncChannels = ['openDialog', 'newProjectWindow', 'newSettingsWindow', 'newAboutWindow', 'openExternal', 'getMinecraftVersionList', 'getModLoaderVersionList'];
   if (asyncChannels.includes(channel)) {
     ipcRenderer.send(channel, ...data);
     return new Promise((resolve, reject) => {
@@ -31,13 +32,17 @@ contextBridge.exposeInMainWorld(
   'api', {
     log: send.bind(send, 'log'),
     path: {
-      join: (...paths) => path.join(...paths)
+      join: (...paths) => path.join(...paths),
+      filename: (p) => path.basename(p),
+      relative: (from, to) => path.relative(from, to)
     },
     fs: {
       exists: (path) => fs.existsSync(path),
-      read: (path) => fs.readFileSync(path).toString()
+      read: (path) => fs.readFileSync(path).toString(),
+      write: (path, data) => fs.writeFileSync(path, data),
+      copy: (src, dest) => fs.copyFileSync(src, dest)
     },
-    send, receive,
+    send, receive, mc: mcapi
   }
 );
 

@@ -28,7 +28,82 @@
   <div id="toasts"></div>
   <!-- Hidden class to not show this before completion -->
   <div id="main" class="hidden">
-    
+    <div class="container p-0">
+      <div class="columns col-gapless">
+        <div class="column col-4" id="sidepanel-column">
+          <div class="panel" id="sidepanel">
+            <div class="panel-header p-2">
+              <div id="icon-select" style="background-image: none;">
+                <div class="overlay s-rounded">
+                  <i class="icon icon-plus"></i>
+                </div>
+              </div>
+              <form class="form-horizontal pr-2 pl-2 mt-2">
+                <div class="form-group">
+                  <div class="col-4">
+                    <span>Name</span>
+                  </div>
+                  <div class="col-8">
+                    <input class="form-input input-sm" id="project-name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-4">
+                    <span>Author</span>
+                  </div>
+                  <div class="col-8">
+                    <input class="form-input input-sm" id="project-author">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-4">
+                    <span>Versions</span>
+                  </div>
+                  <div class="col-4">
+                    <select class="form-select select-sm" id="project-minecraft-version" placeholder="Version">
+                      <option selected disabled>Minecraft Version</option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <select class="form-select select-sm" id="project-forge-version" placeholder="Forge Version">
+                      <option selected disabled>Forge Version</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="panel-body">
+              <div id="git">
+                <div class="empty">
+                  <p class="empty-title h5">Not available</p>
+                  <p class="empty-subtitle">Git integration isn't available yet.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column" id="panel-column">
+          <div class="panel" id="modspanel">
+            <div class="panel-header text-center p-0">
+              <ul class="tab tab-block mb-0 mt-0">
+                <li class="tab-item active"><a href="#mods">Mods</a></li>
+                <li class="tab-item"><a href="#files" class="c-not-allowed">Files</a></li>
+                <li class="tab-item"><a href="#configs" class="c-not-allowed">Configs</a></li>
+              </ul>
+            </div>
+            <div class="panel-body">
+              <div id="mods"></div>
+            </div>
+            <div class="panel-footer btn-group btn-group-block" id="display-when-mods">
+              <button class="btn btn-primary mr-2 disabled">Open Mods Directory</button>
+              <button class="btn btn-primary ml-2 disabled">
+                <i class="icon icon-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- Menu -->
   <div id="menu" class="hidden">

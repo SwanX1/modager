@@ -60,6 +60,7 @@ ipc.on('isGitInstalled', () => {
 });
 
 ipc.on('log', console.log);
+ipc.on('__dirname', () => __dirname);
 
 ipc.onAsync('openDialog', async (options = { properties: ['openFile'] }) => {
   return await dialog.showOpenDialog(options);

@@ -1,8 +1,12 @@
 import {
   toggleVisibility,
   hideMenu,
-  addToast
+  addToast,
+  validateManifest
 } from './functions.js';
+
+/** @type {import('aio-mc-api')} */
+api.mc;
 
 // Redirect initial window to last opened project (or an empty window if there is no last opened project)
 if ('init' in query) {
@@ -21,21 +25,52 @@ if ('empty' in query) {
 }
 
 /**
- * @typedef ProjectManifest
- * @property {string} name Name of the project
- * @property {string} author Author of the project
- * @property {Object} minecraft
- * @property {string} minecraft.version Version of Minecraft
- * @property {Object} minecraft.modloader
- * @property {'forge'} minecraft.modloader.name Name of the modloader
- * @property {string} minecraft.modloader.version
- * @property {Mod[]} mods
- */
-
-/**
  * @typedef Project
  * @property {ProjectManifest} manifest
  * @property {string} path
+ */
+
+/**
+ * @typedef ProjectManifest
+ * @property {string} name Name of the project
+ * @property {string} author Author of the project
+ * @property {string?} icon
+ * @property {Object} minecraft
+ * @property {string} minecraft.version Version of Minecraft
+ * @property {Object} minecraft.modloader
+ * @property {'forge'} minecraft.modloader.name Name of the modloader (currently only forge is supported)
+ * @property {string} minecraft.modloader.version Version of the modloader
+ * @property {Mod[]} mods 
+ */
+
+/**
+ * @typedef Mod
+ * @property {number} id Project ID of the mod
+ * @property {string} name Name of the mod
+ * @property {Author[]} authors Authors of the mod
+ * @property {string} websiteUrl URL for the mod
+ * @property {Category[]} categories Categories for the mod
+ * @property {number} primaryCategoryId Primary category id of the mod
+ * @property {string} slug Mod slug
+ * @property {string} iconUrl Icon URL for the mod
+ * @property {number} installedFileId
+ * @property {string} summary
+ */
+
+/**
+ * @typedef Author
+ * @property {string} name
+ * @property {string} url Curseforge link to author's page
+ * @property {number} id
+ */
+
+/**
+ * @typedef Category
+ * @property {number} categoryId
+ * @property {string} name
+ * @property {string} url
+ * @property {string} avatarUrl
+ * @property {number} parentId
  */
 
 /**
@@ -55,10 +90,162 @@ if ('path' in query) {
     api.send('store', 'set', 'lastPath', query.path);
     project.path = query.path;
     try {
+      api.log('\x1b[0m\x1b[94mINFO \x1b[0mLoading project:', query.path);
       project.manifest = JSON.parse(api.fs.read(api.path.join(query.path, 'pack.json')));
-      document.addEventListener('DOMContentLoaded', () => {
+      validateManifest(project.manifest);
+      // Request versions from api before DOMContentLoaded for efficiency
+      const getMinecraftVersionListPromise = api.send('getMinecraftVersionList');
+      const getModLoaderVersionListPromise = api.send('getModLoaderVersionList');
+      document.addEventListener('DOMContentLoaded', async () => {
+        /** @type {HTMLProgressElement} */
+        const loadingBar = document.querySelector('#loadingBar');
         /** @type {HTMLDivElement} */
         const navbarTitleNode = document.querySelector('#navbar-title');
+        /** @type {HTMLDivElement} */
+        const modsDiv = document.querySelector('#mods');
+        /** @type {HTMLDivElement} */
+        const iconSelect = document.querySelector('#icon-select');
+        /** @type {HTMLInputElement} */
+        const projectName = document.querySelector('#project-name');
+        /** @type {HTMLInputElement} */
+        const projectAuthor = document.querySelector('#project-author');
+        /** @type {HTMLSelectElement} */
+        const projectMinecraftVersion = document.querySelector('#project-minecraft-version');
+        /** @type {HTMLSelectElement} */
+        const projectForgeVersion = document.querySelector('#project-forge-version');
+        
+        if (project.manifest.icon) {
+          iconSelect.setAttribute('style', `background-image: url("${'file://' + api.path.join(project.path, project.manifest.icon)}")`);
+        } else {
+          iconSelect.setAttribute('style', `background-image: url("${'file://' + api.path.join(api.send('__dirname'), '../images/icon_placeholder.png')}")`);
+        }
+        projectName.value = project.manifest.name;
+        projectAuthor.value = project.manifest.author;
+
+        const versions = await getMinecraftVersionListPromise;
+        projectMinecraftVersion.innerHTML = versions.reduce((string, version) => string + `<option>${version.versionString}</option>`, '');
+        projectMinecraftVersion.selectedIndex = versions.map(e => e.versionString).indexOf(project.manifest.minecraft.version);
+
+        async function loaderVersionSelectLoad() {
+          const loaderVersions = (await getModLoaderVersionListPromise)
+            .filter(loaderVersion => loaderVersion.gameVersion === versions[projectMinecraftVersion.selectedIndex].versionString)
+            .sort((a, b) => {
+              // Sort Forge versions correctly (CurseForge provides them in incorrect order)
+              const aS = a.name.split('.');
+              const bS = b.name.split('.');
+
+              const a1 = Number(aS[aS.length - 2]);
+              const b1 = Number(bS[bS.length - 2]);
+              const sort = b1 - a1;
+              if (sort === 0) {
+                const a2 = Number(aS[aS.length - 1]);
+                const b2 = Number(bS[bS.length - 1]);
+                return b2 - a2;
+              } else {
+                return sort;
+              }
+            });
+          projectForgeVersion.innerHTML = loaderVersions.reduce((string, version) => string + `<option>${version.name.replace('forge-', '')}</option>`, '');
+          projectForgeVersion.selectedIndex = loaderVersions.map(e => e.name.replace('forge-', '')).indexOf(project.manifest.minecraft.modloader.version);
+        }
+
+        projectMinecraftVersion.addEventListener('input', loaderVersionSelectLoad);
+        await loaderVersionSelectLoad();
+
+        iconSelect.addEventListener('click', async () => {
+          const selection = await api.send('openDialog', {
+            title: 'Select Project Icon',
+            filters: [
+              { name: 'PNG Images', extensions: ['png'] }
+            ],
+            properties: ['openFile']
+          });
+          if (selection.canceled) return;
+          const oldIconPath = selection.filePaths[0];
+          const newIconPath = api.path.join(project.path, api.path.filename(oldIconPath));
+          api.fs.copy(oldIconPath, newIconPath);
+          project.manifest.icon = api.path.relative(project.path, newIconPath);
+          loadingBar.classList.remove('hidden');
+          api.fs.write(api.path.join(project.path, 'pack.json'), JSON.stringify(project.manifest, null, 2));
+          iconSelect.setAttribute('style', `background-image: url("${'file://' + newIconPath}")`);
+          loadingBar.classList.add('hidden');
+        });
+
+        projectName.addEventListener('change', () => {
+          project.manifest.name = projectName.value;
+          loadingBar.classList.remove('hidden');
+          api.fs.write(api.path.join(project.path, 'pack.json'), JSON.stringify(project.manifest, null, 2));
+          loadingBar.classList.add('hidden');
+        });
+
+        projectAuthor.addEventListener('change', () => {
+          project.manifest.author = projectAuthor.value;
+          loadingBar.classList.remove('hidden');
+          api.fs.write(api.path.join(project.path, 'pack.json'), JSON.stringify(project.manifest, null, 2));
+          loadingBar.classList.add('hidden');
+        });
+
+        projectMinecraftVersion.addEventListener('input', () => {
+          project.manifest.minecraft.version = projectMinecraftVersion.value;
+          loadingBar.classList.remove('hidden');
+          api.fs.write(api.path.join(project.path, 'pack.json'), JSON.stringify(project.manifest, null, 2));
+          loadingBar.classList.add('hidden');
+        });
+
+        projectForgeVersion.addEventListener('input', () => {
+          project.manifest.minecraft.modloader.version = projectForgeVersion.value;
+          loadingBar.classList.remove('hidden');
+          api.fs.write(api.path.join(project.path, 'pack.json'), JSON.stringify(project.manifest, null, 2));
+          loadingBar.classList.add('hidden');
+        });
+        
+        if (project.manifest.mods.length === 0) {
+          modsDiv.innerHTML += `
+            <div class="empty">
+              <p class="empty-title h5">It's lonely here...</p>
+              <p class="empty-subtitle">Let's change that by adding some mods!</p>
+              <p class="empty-subtitle">Start by clicking the plus below.</p>
+            </div>
+          `;
+        } else {
+          project.manifest.mods.forEach(mod => {
+            modsDiv.innerHTML += `
+              <div class="tile tile-mod tile-centered">
+                <div class="tile-icon p-1">
+                  <img class="img-fit-contain mod-logo" src="${mod.iconUrl}" draggable="false">
+                </div>
+                <div class="tile-content">
+                  <div class="tile-title text-bold">${mod.name} <span class="text-small text-normal">by ${mod.authors.map(a => a.name).join(', ')}</span></div>
+                  <div class="tile-subtitle">${mod.summary}</div>
+                </div>
+                <div class="tile-action">
+                  <div class="dropdown">
+                    <a href="#" class="btn btn-link dropdown-toggle btn-lg pt-1" tabindex="0">
+                      <i class="icon icon-more-vert"></i>
+                    </a>
+                    <ul class="menu" data-modid="${mod.id}">
+                      <li class="menu-item" class="mod-download">
+                        <a href="#">
+                          <i class="icon icon-download mr-2"></i> Save
+                        </a>
+                      </li>
+                      <li class="menu-item">
+                        <a href="#" class="mod-update">
+                          <i class="icon icon-refresh mr-2"></i> Update
+                        </a>
+                      </li>
+                      <li class="menu-item">
+                        <a href="#" class="mod-delete">
+                          <i class="icon icon-delete mr-2"></i> Remove
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        }
         navbarTitleNode.innerHTML = project.manifest.name;
       });
     } catch (err) {
@@ -66,7 +253,8 @@ if ('path' in query) {
         /** @type {HTMLDivElement} */
         const navbarTitleNode = document.querySelector('#navbar-title');
         navbarTitleNode.innerHTML = project.path;
-        addToast('This directory doesn\'t look like a valid project...', 'error', { enabled: false });
+        api.log('\x1b[0m\x1b[31mERROR \x1b[0mProject is not valid:', query.path);
+        addToast('This path is not a project directory or the pack.json file is malformed.', 'error', { enabled: false });
       });
     }
   }
@@ -75,8 +263,6 @@ if ('path' in query) {
 document.addEventListener('DOMContentLoaded', () => {
   /** @type {HTMLDivElement} */
   const mainNode = document.querySelector('#main');
-  /** @type {HTMLProgressElement} */
-  const loadingBar = document.querySelector('#loadingBar');
   /** @type {HTMLAnchorElement} */
   const menuCloseButton = document.querySelector('#menu-close');
   /** @type {HTMLAnchorElement} */
