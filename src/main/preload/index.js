@@ -28,6 +28,27 @@ function receive(channel, callback) {
     return ipcRenderer.on(channel, callback);
   }
 }
+
+/** @type {Map<string, string>} */
+const templateCache = new Map();
+function getTemplate(name, variables = {}) {
+  if (!templateCache.has(name)) {
+    templateCache.set(name, fs.readFileSync(path.join(send('__dirname'), '../templates', name + '.html')).toString());
+  }
+
+  /** @type {string} */
+  let template = templateCache.get(name)
+    .replace(/\<\!\-\-.*\-\-\>/gi, ''); // Remove all comments 
+  for (const key in variables) {
+    if (Object.hasOwnProperty.call(variables, key)) {
+      // Checks for {{key}} and replaces it with the according string.
+      template = template.replaceAll(`{{${key}}}`, variables[key]);
+    }
+  }
+
+  return template;
+}
+
 contextBridge.exposeInMainWorld(
   'api', {
     log: send.bind(send, 'log'),
@@ -42,7 +63,7 @@ contextBridge.exposeInMainWorld(
       write: (path, data) => fs.writeFileSync(path, data),
       copy: (src, dest) => fs.copyFileSync(src, dest)
     },
-    send, receive, mc: mcapi
+    getTemplate, send, receive, mc: mcapi
   }
 );
 

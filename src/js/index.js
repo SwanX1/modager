@@ -200,50 +200,16 @@ if ('path' in query) {
         });
         
         if (project.manifest.mods.length === 0) {
-          modsDiv.innerHTML += `
-            <div class="empty">
-              <p class="empty-title h5">It's lonely here...</p>
-              <p class="empty-subtitle">Let's change that by adding some mods!</p>
-              <p class="empty-subtitle">Start by clicking the plus below.</p>
-            </div>
-          `;
+          modsDiv.innerHTML += api.getTemplate('emptymods');
         } else {
           project.manifest.mods.forEach(mod => {
-            modsDiv.innerHTML += `
-              <div class="tile tile-mod tile-centered">
-                <div class="tile-icon p-1">
-                  <img class="img-fit-contain mod-logo" src="${mod.iconUrl}" draggable="false">
-                </div>
-                <div class="tile-content">
-                  <div class="tile-title text-bold">${mod.name} <span class="text-small text-normal">by ${mod.authors.map(a => a.name).join(', ')}</span></div>
-                  <div class="tile-subtitle">${mod.summary}</div>
-                </div>
-                <div class="tile-action">
-                  <div class="dropdown">
-                    <a href="#" class="btn btn-link dropdown-toggle btn-lg pt-1" tabindex="0">
-                      <i class="icon icon-more-vert"></i>
-                    </a>
-                    <ul class="menu" data-modid="${mod.id}">
-                      <li class="menu-item" class="mod-download">
-                        <a href="#">
-                          <i class="icon icon-download mr-2"></i> Save
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="#" class="mod-update">
-                          <i class="icon icon-refresh mr-2"></i> Update
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="#" class="mod-delete">
-                          <i class="icon icon-delete mr-2"></i> Remove
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            `;
+            modsDiv.innerHTML += api.getTemplate('modtile', {
+              iconUrl: mod.iconUrl,
+              name: mod.name,
+              authors: mod.authors.map(a => a.name).join(', '),
+              summary: mod.summary,
+              id: mod.id,
+            });
           });
         }
         navbarTitleNode.innerHTML = project.manifest.name;
