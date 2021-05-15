@@ -1,30 +1,20 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const { app, BrowserWindow, dialog, shell } = require('electron');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const fs = require('fs/promises');
 const mc = require('aio-mc-api');
 const store = new (require('electron-store'))();
+const IPCEventHandler = require('./IPCEventHandler');
 
 if (!store.has('showDevTools')) {
   store.set('showDevTools', false);
 }
 
-const ipc = {
-  on(channel, callback) {
-    ipcMain.on(channel, (event, ...args) => {
-      event.returnValue = callback(...args);
-    });
-  },
-  onAsync(channel, callback) {
-    ipcMain.on(channel, async (event, ...args) => {
-      event.sender.send(channel, await callback(...args));
-    });
-  }
-};
+const ipc = new IPCEventHandler();
 
-ipc.on('store', (action, ...params) => {
+ipc.sync('store', (action, ...params) => {
   switch (action) {
     case 'get':
       return store.get(...params);
@@ -39,12 +29,12 @@ ipc.on('store', (action, ...params) => {
   }
 });
 
-ipc.onAsync('openExternal', link => {
+ipc.async('openExternal', link => {
   return shell.openExternal(link);
 });
 
 let gitInstalled = null;
-ipc.on('isGitInstalled', () => {
+ipc.sync('isGitInstalled', () => {
   if (gitInstalled === null) {
     const gitVersion = spawnSync('git', ['--version']);
     console.log('\x1b[0m\x1b[90m$ git --version\x1b[0m');
@@ -59,15 +49,15 @@ ipc.on('isGitInstalled', () => {
   return gitInstalled;
 });
 
-ipc.on('log', console.log);
-ipc.on('__dirname', () => __dirname);
+ipc.sync('log', console.log);
+ipc.sync('__dirname', () => __dirname);
 
-ipc.onAsync('openDialog', async (options = { properties: ['openFile'] }) => {
+ipc.async('openDialog', async (options = { properties: ['openFile'] }) => {
   return await dialog.showOpenDialog(options);
 });
 
 let minecraftVersionList;
-ipc.onAsync('getMinecraftVersionList', async (...args) => {
+ipc.async('getMinecraftVersionList', async (...args) => {
   if (!minecraftVersionList) {
     try {
       console.log('\x1b[0m\x1b[94mINFO \x1b[0mFetching minecraft versions');
@@ -80,7 +70,7 @@ ipc.onAsync('getMinecraftVersionList', async (...args) => {
 });
 
 let modLoaderVersionList;
-ipc.onAsync('getModLoaderVersionList', async (...args) => {
+ipc.async('getModLoaderVersionList', async (...args) => {
   if (!modLoaderVersionList) {
     try {
       console.log('\x1b[0m\x1b[94mINFO \x1b[0mFetching modloader versions');
@@ -92,7 +82,7 @@ ipc.onAsync('getModLoaderVersionList', async (...args) => {
   return modLoaderVersionList;
 });
 
-ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
+ipc.async('newProjectWindow', () => new Promise(resolve => {
   const window = new BrowserWindow({
     width: Math.min(480, mainWin.getSize()[0] - 64),
     height: Math.min(300, mainWin.getSize()[1] - 64),
@@ -120,7 +110,7 @@ ipc.onAsync('newProjectWindow', () => new Promise(resolve => {
   });
 }));
 
-ipc.onAsync('setQuery', (query) => mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html' + query)));
+ipc.async('setQuery', (query) => mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html' + query)));
 
 /**
  * Data coming from a 'newproject' window, for project creation
@@ -134,7 +124,7 @@ ipc.onAsync('setQuery', (query) => mainWin.loadURL('file://' + path.join(__dirna
  * @property {boolean} initGit Should a new git repository be initialized in the given path? 
  */
 
-ipc.onAsync('createProject', /** @param {NewProjectData} data */ async data => {
+ipc.async('createProject', /** @param {NewProjectData} data */ async data => {
   await fs.mkdir(data.path, { recursive: true });
   if (data.initGit) {
     console.log(`\x1b[0m\x1b[90m$ cd ${data.path}\x1b[0m`);
@@ -161,7 +151,7 @@ ipc.onAsync('createProject', /** @param {NewProjectData} data */ async data => {
   return data.path;
 });
 
-ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
+ipc.async('newSettingsWindow', () => new Promise(resolve => {
   const window = new BrowserWindow({
     width: Math.min(480, mainWin.getSize()[0] - 64),
     height: Math.min(300, mainWin.getSize()[1] - 64),
@@ -188,7 +178,7 @@ ipc.onAsync('newSettingsWindow', () => new Promise(resolve => {
     resolve(true);
   });
 }));
-ipc.onAsync('newAboutWindow', () => new Promise(resolve => {
+ipc.async('newAboutWindow', () => new Promise(resolve => {
   const window = new BrowserWindow({
     width: Math.min(480, mainWin.getSize()[0] - 64),
     height: Math.min(300, mainWin.getSize()[1] - 64),
