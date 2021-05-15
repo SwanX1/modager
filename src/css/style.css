@@ -149,7 +149,7 @@ header#mainheader {
 }
 
 #sidepanel-column {
-  max-width: 480px;
+  max-width: 400px;
 }
 
 #project-icon {
@@ -227,8 +227,6 @@ header#mainheader {
   opacity: 1;
 }
 
-@media only screen and (max-width: 1500px) {
-  #panel-column {
-    width: calc(100% / 3 * 2);
-  }
+#panel-column {
+  width: calc(100% / 3 * 2);
 }
