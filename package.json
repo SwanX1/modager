@@ -1,6 +1,6 @@
 {
   "name": "modager",
-  "version": "0.0.1-dev6",
+  "version": "0.0.1-dev7",
   "description": "a modpack manager",
   "main": "src/main/app.js",
   "scripts": {
@@ -12,12 +12,12 @@
   "author": "SwanX1",
   "license": "Apache-2.0",
   "dependencies": {
-    "aio-mc-api": "^1.2.2",
-    "electron-store": "^7.0.2"
+    "aio-mc-api": "^1.2.3",
+    "electron-store": "^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.34",
-    "electron": "^12.0.1",
+    "electron": "^12.0.7",
     "electron-builder": "^22.10.5",
     "spectre.css": "^0.5.9"
   },
