@@ -99,6 +99,10 @@ header#mainheader {
   color: inherit;
 }
 
+.no-box-shadow {
+  box-shadow: none!important;
+}
+
 .noselect, img {
   user-select: none;
 }
@@ -229,4 +233,14 @@ header#mainheader {
 
 #panel-column {
   width: calc(100% / 3 * 2);
+}
+
+.icon.icon-box {
+  border-color: currentColor;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 1.5px;
+  vertical-align: -6%;
+  max-width: 14.5px;
+  max-height: 14.5px;
 }

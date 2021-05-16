@@ -25,6 +25,7 @@ if ('empty' in query) {
   api.send('store', 'delete', 'lastPath');
 }
 
+//#region Project Typedefs
 /**
  * @typedef Project
  * @property {ProjectManifest} manifest
@@ -73,6 +74,7 @@ if ('empty' in query) {
  * @property {string} avatarUrl
  * @property {number} parentId
  */
+//#endregion
 
 /**
  * @type {Project}
@@ -114,7 +116,16 @@ if ('path' in query) {
         const projectMinecraftVersion = document.querySelector('#project-minecraft-version');
         /** @type {HTMLSelectElement} */
         const projectForgeVersion = document.querySelector('#project-forge-version');
-        
+        /** @type {HTMLButtonElement} */
+        const closeButton = document.querySelector('#close-btn');
+        /** @type {HTMLButtonElement} */
+        const minimizeButton = document.querySelector('#minimize-btn');
+        /** @type {HTMLButtonElement} */
+        const maximizeButton = document.querySelector('#maximize-btn');
+
+        closeButton.addEventListener('click', () => window.close());
+        minimizeButton.addEventListener('click', () => api.send('minimize'));
+        maximizeButton.addEventListener('click', () => api.send('maximize'));
         if (project.manifest.icon) {
           iconSelect.setAttribute('style', `background-image: url("${'file://' + api.path.join(project.path, project.manifest.icon)}")`);
         } else {

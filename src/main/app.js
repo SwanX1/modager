@@ -239,4 +239,24 @@ app.on('ready', () => {
   mainWin.on('closed', () => {
     app.quit();
   });
+
+  ipc.sync('minimize', () => {
+    return mainWin.minimize();
+  });
+
+  ipc.sync('maximize', () => {
+    if (mainWin.isMaximized()) {
+      return mainWin.unmaximize();
+    } else {
+      return mainWin.maximize();
+    }
+  });
+  
+  ipc.sync('minimizable', () => {
+    return mainWin.isMinimizable();
+  });
+
+  ipc.sync('maximizable', () => {
+    return mainWin.isMaximizable();
+  });
 });

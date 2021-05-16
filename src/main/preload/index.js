@@ -10,7 +10,7 @@ const query = parseQuery(window.location.search);
 contextBridge.exposeInMainWorld('query', query);
 
 function send(channel, ...data) {
-  let syncChannels = ['isGitInstalled', 'log', 'store', '__dirname'];
+  let syncChannels = ['isGitInstalled', 'log', 'store', '__dirname', 'minimize', 'maximize', 'minimizable', 'maximizable'];
   if (syncChannels.includes(channel)) {
     return ipcRenderer.sendSync(channel, ...data);
   }
