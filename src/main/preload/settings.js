@@ -1,3 +1,4 @@
+'use strict';
 const { contextBridge, ipcRenderer } = require('electron');
 const getTemplate = require('./getTemplate');
 

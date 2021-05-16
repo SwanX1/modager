@@ -1,3 +1,4 @@
+'use strict';
 const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
 const pathModule = require('path');

@@ -1,3 +1,4 @@
+'use strict';
 window.addEventListener('DOMContentLoaded', () => {
   /** @type {HTMLDivElement} */
   const headerWrapper = document.querySelector('#header-wrapper');

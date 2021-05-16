@@ -1,3 +1,4 @@
+'use strict';
 // Any JSDocs here are for code completion, they
 // are not necessary, however please don't remove
 // them as they help with development.
