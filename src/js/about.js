@@ -1,4 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
+  /** @type {HTMLDivElement} */
+  const headerWrapper = document.querySelector('#header-wrapper');
+  headerWrapper.innerHTML = api.getTemplate('headerbar', { title: 'About' });
+
   document.querySelector('#open-github').addEventListener('click', () => {
     api.send('openExternal', 'https://github.com/SwanX1/modager');
   });

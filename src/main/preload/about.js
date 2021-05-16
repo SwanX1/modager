@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const getTemplate = require('./getTemplate');
 
 function send(channel, ...data) {
   let syncChannels = [];
@@ -22,4 +23,4 @@ function receive(channel, callback) {
   }
 }
 
-contextBridge.exposeInMainWorld('api', { send, receive });
+contextBridge.exposeInMainWorld('api', { send, receive, getTemplate });

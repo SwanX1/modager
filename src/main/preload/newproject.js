@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
 const pathModule = require('path');
+const getTemplate = require('./getTemplate');
 
 function send(channel, ...data) {
   let syncChannels = ['isGitInstalled', 'log'];
@@ -50,6 +51,6 @@ contextBridge.exposeInMainWorld(
       join: (...paths) => pathModule.join(...paths)
     },
     homedir: pathModule.join(require('os').homedir(), 'modager'),
-    send, receive,
+    getTemplate, send, receive,
   }
 );

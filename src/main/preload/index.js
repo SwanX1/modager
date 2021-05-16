@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const mcapi = require('aio-mc-api');
+const getTemplate = require('./getTemplate');
 
 const query = parseQuery(window.location.search);
 
@@ -27,26 +28,6 @@ function receive(channel, callback) {
   if (validChannels.includes(channel)) {
     return ipcRenderer.on(channel, callback);
   }
-}
-
-/** @type {Map<string, string>} */
-const templateCache = new Map();
-function getTemplate(name, variables = {}) {
-  if (!templateCache.has(name)) {
-    templateCache.set(name, fs.readFileSync(path.join(send('__dirname'), '../templates', name + '.html')).toString());
-  }
-
-  /** @type {string} */
-  let template = templateCache.get(name)
-    .replace(/\<\!\-\-.*\-\-\>/gi, ''); // Remove all comments 
-  for (const key in variables) {
-    if (Object.hasOwnProperty.call(variables, key)) {
-      // Checks for {{key}} and replaces it with the according string.
-      template = template.replaceAll(`{{${key}}}`, variables[key]);
-    }
-  }
-
-  return template;
 }
 
 contextBridge.exposeInMainWorld(

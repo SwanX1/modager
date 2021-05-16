@@ -15,6 +15,8 @@ const modifyProjectDirectoryValue = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  /** @type {HTMLDivElement} */
+  const headerWrapper = document.querySelector('#header-wrapper');
   /** @type {HTMLProgressElement} */
   const loadingBar = document.querySelector('#loadingBar');
   /** @type {HTMLSelectElement} */
@@ -35,6 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gitCheckbox = document.querySelector('#initGit');
   /** @type {HTMLSpanElement} */
   const submitButton = document.querySelector('#submit');
+
+  headerWrapper.innerHTML = api.getTemplate('headerbar', { title: 'New Project' });
 
   projectDirectoryInput.value = api.homedir;
   loadingBar.classList.remove('hidden');
