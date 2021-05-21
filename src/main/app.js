@@ -7,6 +7,9 @@ const fs = require('fs/promises');
 const mc = require('aio-mc-api');
 const store = new (require('electron-store'))();
 const IPCEventHandler = require('./IPCEventHandler');
+const EventEmitter = require('events');
+
+const eventbus = new EventEmitter();
 
 if (!store.has('showDevTools')) {
   store.set('showDevTools', false);
@@ -15,14 +18,19 @@ if (!store.has('showDevTools')) {
 const ipc = new IPCEventHandler();
 
 ipc.sync('store', (action, ...params) => {
+  eventbus.emit('store', action, ...params);
   switch (action) {
     case 'get':
+      eventbus.emit('getStore', ...params);
       return store.get(...params);
     case 'set':
+      eventbus.emit('setStore', ...params);
       return store.set(...params);
     case 'delete':
+      eventbus.emit('deleteStore', ...params);
       return store.delete(...params);
     case 'has':
+      eventbus.emit('hasStore', ...params);
       return store.has(...params);
     default:
       throw new TypeError('No action for \'store\':', action);
@@ -101,10 +109,8 @@ ipc.async('newProjectWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/newproject.html'));
   window.removeMenu();
-  if (store.get('showDevTools') === true) {
-    window.webContents.openDevTools();
-  }
   window.once('ready-to-show', () => {
+    eventbus.emit('newWindow', window);
     window.show();
     resolve(true);
   });
@@ -170,9 +176,7 @@ ipc.async('newSettingsWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/settings.html'));
   window.removeMenu();
-  if (store.get('showDevTools') === true) {
-    window.webContents.openDevTools();
-  }
+  eventbus.emit('newWindow', window);
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -197,9 +201,7 @@ ipc.async('newAboutWindow', () => new Promise(resolve => {
   });
   window.loadURL('file://' + path.join(__dirname, '../html/about.html'));
   window.removeMenu();
-  if (store.get('showDevTools') === true) {
-    window.webContents.openDevTools();
-  }
+  eventbus.emit('newWindow', window);
   window.once('ready-to-show', () => {
     window.show();
     resolve(true);
@@ -228,9 +230,7 @@ app.on('ready', () => {
   });
   mainWin.loadURL('file://' + path.join(__dirname, '../html/index.html?init'));
   mainWin.removeMenu();
-  if (store.get('showDevTools') === true) {
-    mainWin.webContents.openDevTools();
-  }
+  eventbus.emit('newWindow', mainWin);
   mainWin.once('ready-to-show', () => {
     console.log('\x1b[0m\x1b[94mINFO \x1b[0mWindow is ready to show');
     mainWin.show();
@@ -260,3 +260,27 @@ app.on('ready', () => {
     return mainWin.isMaximizable();
   });
 });
+
+{ // Do not let this out in the global scope, no one _should_ access this.
+  const allWindows = new Set();
+
+  eventbus.on('newWindow', (window) => {
+    if (store.get('showDevTools')) {
+      window.webContents.openDevTools();
+    }
+    allWindows.add(window);
+    window.on('closed', () => {
+      allWindows.delete(window);
+    });
+  });
+
+  eventbus.on('setStore', (...params) => {
+    if (params[0] === 'showDevTools') {
+      if (params[1] === true) {
+        allWindows.forEach(window => window.webContents.openDevTools());
+      } else if (params[1] === false) {
+        allWindows.forEach(window => window.webContents.closeDevTools());
+      }
+    }
+  });
+}

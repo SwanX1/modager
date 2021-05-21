@@ -45,7 +45,7 @@ class Setting {
 
 /** @type {Setting[]} */
 const settings = [
-  new Setting('showDevTools', 'Show DevTools when window is created', 'boolean'),
+  new Setting('showDevTools', 'Show DevTools', 'boolean'),
 ];
 
 window.addEventListener('DOMContentLoaded', () => {
